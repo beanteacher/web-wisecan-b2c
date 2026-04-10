@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model McpAgentSmsTran {
+  msgId             BigInt    @id @default(autoincrement()) @map("msg_id") @db.BigInt
+  msgType           String    @map("msg_type") @db.VarChar(4)
+  msgSubType        String    @map("msg_sub_type") @db.VarChar(5)
+  groupId           Int?      @map("group_id")
+  userId            String?   @map("user_id") @db.VarChar(32)
+  kisaCode          String?   @map("kisa_code") @db.VarChar(20)
+  destaddr          String    @db.VarChar(32)
+  callback          String    @db.VarChar(32)
+  billCode          String?   @map("bill_code") @db.VarChar(30)
+  sendMsg           String?   @map("send_msg") @db.VarChar(300)
+  originMsgId       BigInt?   @map("origin_msg_id") @db.BigInt
+  originMsgType     String?   @map("origin_msg_type") @db.VarChar(5)
+  messageState      Int       @default(0) @map("message_state") @db.TinyInt
+  retryCount        Int?      @default(0) @map("retry_count") @db.TinyInt
+  createDate        DateTime  @default(now()) @map("create_date")
+  updateDate        DateTime  @default(now()) @map("update_date")
+  requestDate       DateTime  @default(now()) @map("request_date")
+  resultDeliverDate DateTime? @map("result_deliver_date")
+  resultCode        String?   @map("result_code") @db.VarChar(5)
+  resultNetId       String?   @map("result_net_id") @db.VarChar(4)
+  etcChar1          String?   @map("etc_char_1") @db.VarChar(100)
+  etcChar2          String?   @map("etc_char_2") @db.VarChar(100)
+  etcChar3          String?   @map("etc_char_3") @db.VarChar(100)
+  etcChar4          String?   @map("etc_char_4") @db.VarChar(100)
+  etcInt5           Int?      @map("etc_int_5")
+  etcInt6           Int?      @map("etc_int_6")
+  etcInt7           Int?      @map("etc_int_7")
+  etcInt8           Int?      @map("etc_int_8")
+
+  @@index([messageState, requestDate, msgType], map: "idx_fetch")
+  @@map("MCP_AGENT_SMS_TRAN")
+}
+
+model McpAgentMmsTran {
+  msgId             BigInt    @id @default(autoincrement()) @map("msg_id") @db.BigInt
+  msgType           String    @map("msg_type") @db.VarChar(4)
+  msgSubType        String    @map("msg_sub_type") @db.VarChar(5)
+  groupId           Int?      @map("group_id")
+  userId            String?   @map("user_id") @db.VarChar(32)
+  kisaCode          String?   @map("kisa_code") @db.VarChar(20)
+  destaddr          String    @db.VarChar(32)
+  callback          String    @db.VarChar(32)
+  billCode          String?   @map("bill_code") @db.VarChar(30)
+  subject           String?   @db.VarChar(120)
+  sendMsg           String?   @map("send_msg") @db.Text
+  originMsgId       BigInt?   @map("origin_msg_id") @db.BigInt
+  originMsgType     String?   @map("origin_msg_type") @db.VarChar(5)
+  fileCount         Int       @default(0) @map("file_count") @db.TinyInt
+  filePath          String?   @map("file_path") @db.VarChar(255)
+  messageState      Int       @default(0) @map("message_state") @db.TinyInt
+  retryCount        Int?      @default(0) @map("retry_count") @db.TinyInt
+  createDate        DateTime  @default(now()) @map("create_date")
+  updateDate        DateTime  @default(now()) @map("update_date")
+  requestDate       DateTime  @default(now()) @map("request_date")
+  resultDeliverDate DateTime? @map("result_deliver_date")
+  resultCode        String?   @map("result_code") @db.VarChar(5)
+  resultNetId       String?   @map("result_net_id") @db.VarChar(4)
+  etcChar1          String?   @map("etc_char_1") @db.VarChar(100)
+  etcChar2          String?   @map("etc_char_2") @db.VarChar(100)
+  etcChar3          String?   @map("etc_char_3") @db.VarChar(100)
+  etcChar4          String?   @map("etc_char_4") @db.VarChar(100)
+  etcInt5           Int?      @map("etc_int_5")
+  etcInt6           Int?      @map("etc_int_6")
+  etcInt7           Int?      @map("etc_int_7")
+  etcInt8           Int?      @map("etc_int_8")
+
+  @@index([messageState, requestDate, msgType], map: "idx_fetch")
+  @@map("MCP_AGENT_MMS_TRAN")
+}
+
+model McpAgentKkoTran {
+  msgId             BigInt    @id @default(autoincrement()) @map("msg_id") @db.BigInt
+  msgType           String    @map("msg_type") @db.VarChar(4)
+  msgSubType        String    @map("msg_sub_type") @db.VarChar(5)
+  groupId           Int?      @map("group_id")
+  userId            String?   @map("user_id") @db.VarChar(32)
+  kisaCode          String?   @map("kisa_code") @db.VarChar(20)
+  destaddr          String    @db.VarChar(32)
+  callback          String    @db.VarChar(32)
+  billCode          String?   @map("bill_code") @db.VarChar(30)
+  subject           String?   @db.VarChar(120)
+  sendMsg           String?   @map("send_msg") @db.Text
+  senderKey         String    @map("sender_key") @db.VarChar(40)
+  templateCode      String?   @map("template_code") @db.VarChar(50)
+  attachData        String?   @map("attach_data") @db.Text
+  fbType            String?   @map("fb_type") @db.VarChar(5)
+  fbSubject         String?   @map("fb_subject") @db.VarChar(120)
+  fbMsg             String?   @map("fb_msg") @db.Text
+  fbFileCount       Int?      @default(0) @map("fb_file_count") @db.TinyInt
+  fbFilePath        String?   @map("fb_file_path") @db.VarChar(255)
+  fbMsgId           BigInt?   @map("fb_msg_id") @db.BigInt
+  messageState      Int       @default(0) @map("message_state") @db.TinyInt
+  retryCount        Int?      @default(0) @map("retry_count") @db.TinyInt
+  createDate        DateTime  @default(now()) @map("create_date")
+  updateDate        DateTime  @default(now()) @map("update_date")
+  requestDate       DateTime  @default(now()) @map("request_date")
+  resultDeliverDate DateTime? @map("result_deliver_date")
+  resultCode        String?   @map("result_code") @db.VarChar(5)
+  resultNetId       String?   @map("result_net_id") @db.VarChar(4)
+  etcChar1          String?   @map("etc_char_1") @db.VarChar(100)
+  etcChar2          String?   @map("etc_char_2") @db.VarChar(100)
+  etcChar3          String?   @map("etc_char_3") @db.VarChar(100)
+  etcChar4          String?   @map("etc_char_4") @db.VarChar(100)
+  etcInt5           Int?      @map("etc_int_5")
+  etcInt6           Int?      @map("etc_int_6")
+  etcInt7           Int?      @map("etc_int_7")
+  etcInt8           Int?      @map("etc_int_8")
+
+  @@index([messageState, requestDate, msgType], map: "idx_fetch")
+  @@map("MCP_AGENT_KKO_TRAN")
+}
+
+model McpAgentRcsTran {
+  msgId             BigInt    @id @default(autoincrement()) @map("msg_id") @db.BigInt
+  msgType           String    @map("msg_type") @db.VarChar(4)
+  msgSubType        String    @map("msg_sub_type") @db.VarChar(5)
+  groupId           Int?      @map("group_id")
+  userId            String?   @map("user_id") @db.VarChar(32)
+  kisaCode          String?   @map("kisa_code") @db.VarChar(20)
+  destaddr          String    @db.VarChar(32)
+  callback          String    @db.VarChar(32)
+  billCode          String?   @map("bill_code") @db.VarChar(30)
+  subject           String?   @db.VarChar(120)
+  sendMsg           String?   @map("send_msg") @db.Text
+  originMsgId       BigInt?   @map("origin_msg_id") @db.BigInt
+  originMsgType     String?   @map("origin_msg_type") @db.VarChar(5)
+  fileCount         Int       @default(0) @map("file_count") @db.TinyInt
+  filePath          String?   @map("file_path") @db.VarChar(255)
+  messageState      Int       @default(0) @map("message_state") @db.TinyInt
+  retryCount        Int?      @default(0) @map("retry_count") @db.TinyInt
+  createDate        DateTime  @default(now()) @map("create_date")
+  updateDate        DateTime  @default(now()) @map("update_date")
+  requestDate       DateTime  @default(now()) @map("request_date")
+  resultDeliverDate DateTime? @map("result_deliver_date")
+  resultCode        String?   @map("result_code") @db.VarChar(5)
+  resultNetId       String?   @map("result_net_id") @db.VarChar(4)
+  etcChar1          String?   @map("etc_char_1") @db.VarChar(100)
+  etcChar2          String?   @map("etc_char_2") @db.VarChar(100)
+  etcChar3          String?   @map("etc_char_3") @db.VarChar(100)
+  etcChar4          String?   @map("etc_char_4") @db.VarChar(100)
+  etcInt5           Int?      @map("etc_int_5")
+  etcInt6           Int?      @map("etc_int_6")
+  etcInt7           Int?      @map("etc_int_7")
+  etcInt8           Int?      @map("etc_int_8")
+
+  @@index([messageState, requestDate, msgType], map: "idx_fetch")
+  @@map("MCP_AGENT_RCS_TRAN")
+}
