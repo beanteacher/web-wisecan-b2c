@@ -131,22 +131,48 @@ description: "PM 스프린트 운영 프로세스 (Jira 티켓 발행, 스프린
 
 ---
 
-## Design-First 워크플로우
+## Design-First 워크플로우 (사람 개입 단계 포함)
 
-> UI/UX 시안 완료 후에만 FE 구현을 허용한다. 시안 없이 FE 코드 작성 절대 금지.
+> UI/UX 시안이 Figma 파일에 실제 layers로 존재하고, 사용자가 FE 구현을 명시적으로 지시한 뒤에만 FE 구현을 허용한다.
+> 로컬 manifest 파일 또는 FE 임의 해석만으로 UI 구현 금지.
 
-### 의존성 설정
+### 단계별 책임
 
-- 팀 구성 시 반드시 **UI/UX 시안 태스크 → FE 구현 태스크** 순서로 의존성(blocks) 설정
-- UI/UX manifest 산출물 경로: `{프로젝트}/uiux_designer/figma-manifests/{산출물명}/`
-- 필수 파일: `manifest.json` + `manifest.import-data.json` + `code.js` + `ui.html`
+1. **UI/UX sub-agent (자동)**
+   - `{프로젝트}/uiux/figma-manifests/{산출물명}/` 에 `manifest.json` + `manifest.import-data.json` + `code.js` + `ui.html` 생성
+   - `code.js` 는 Figma Plugin 으로 실제 layers 를 생성하는 코드이며, **이 단계에서는 아직 Figma 파일에 layers 가 없음**
+   - 완료 보고 시 manifest 경로 + 생성 예정 프레임 이름 목록 전달
+
+2. **사용자 (사람 개입 필수 단계)**
+   - Figma 에서 직접 플러그인을 실행하여 manifest 기반 layers 를 프로젝트 Figma 파일에 생성
+   - 시각적으로 확인 후 문제 있으면 UI/UX sub-agent 에게 수정 요청 (반복)
+   - 문제 없으면 **Frontend sub-agent 에게 작업 지시**
+   - 지시 시 프로젝트 Figma file URL 또는 특정 node ID 를 포함한다 (예: 이 프로젝트의 파일은 `memory/figma_ux_file.md` 에 기록)
+
+3. **Frontend sub-agent (사용자 지시 후 자동)** — 선작업은 **Figma MCP**, fallback 은 **local manifest**
+   - 지시 받은 figma URL 에서 `fileKey` 와 `nodeId` 추출
+   - **선작업 (primary)**: `mcp__figma__get_design_context(fileKey, nodeId)` 로 실제 layers 를 조회
+     - 필요 시 `mcp__figma__get_metadata`, `mcp__figma__get_screenshot`, `mcp__figma__get_variable_defs` 추가 호출
+     - MCP 응답의 code/screenshot/design tokens/hints 를 기준으로 FSD 구조 에 구현
+     - 프로젝트 컴포넌트(`shared/ui/`) 재사용, Code Connect 매핑 우선
+   - **Fallback**: Figma MCP 호출이 rate limit 등 **요금제 이슈**로 실패하면, 로컬 `uiux/figma-manifests/{산출물명}/code.js` 와 `manifest.import-data.json` 을 직접 읽어 구현
+     - `code.js` 는 Figma 에 layers 를 생성한 원본 소스이므로 x/y/w/h/color/text 값이 그대로 들어 있다 — 좌표 1:1 픽셀 매핑은 하지 말고 구조·비율·순서·상태 분기만 일치시킬 것
+     - `manifest.import-data.json` 의 `designTokens` / `frames` 섹션으로 토큰·레이아웃 확인
+   - 요금제 이슈로 fallback 을 사용한 경우 반드시 보고 시 명시하고, rate limit 이 풀리면 재검증 권장
+
+### 팀/스프린트 구성 규칙
+
+- `team` 또는 `swarm` 실행 시 **FE 태스크를 UI/UX 완료 직후 자동 스폰하지 말 것**
+- UI/UX 완료 보고 후 팀은 pause → 사용자 지시를 대기 → 사용자가 `"이제 FE 진행해"` 와 같이 명시 지시하면 FE 워커 스폰
+- 혹은 UI/UX 완료 후 팀을 일단 종료하고, 사용자가 Figma 반영을 마친 뒤 새 팀 또는 단일 FE 워커로 FE 작업을 시작
 
 ### manifest 작성 규칙
 
-- manifest 형식은 `uiux_designer/AGENTS.md` 확인 후 작성 — 자의적 형식 금지
-- `code.js`는 **ES5 호환 필수** (Figma 런타임 제약)
+- manifest 형식은 `uiux/CLAUDE.md` 확인 후 작성 — 자의적 형식 금지
+- `code.js` 는 **ES5 호환 필수** (Figma 런타임 제약)
   - 금지: bare catch, arrow function, template literal, forEach
-- FE는 핸드오프 통보를 받기 전까지 해당 섹션 구현 금지
+  - 텍스트 생성 전 반드시 `figma.loadFontAsync` 프리로드 (`Inter Regular/Medium/Semi Bold/Bold` 기본)
+- FE 는 사용자 지시 없이 해당 섹션 구현 금지, Figma MCP 조회 없이 구현 금지
 
 ---
 
