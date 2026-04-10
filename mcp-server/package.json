@@ -10,23 +10,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.78.0",
-    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.16.0",
-    "@types/pdfkit": "^0.17.5",
-    "docx": "^9.6.1",
     "dotenv": "^16.0.0",
-    "mssql": "^11.0.1",
-    "mysql2": "^3.20.0",
-    "pdfkit": "^0.18.0",
-    "prisma": "^6.16.0",
-    "sharp": "^0.34.5"
+    "prisma": "^6.16.0"
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
-    "@types/mssql": "^9.1.9",
     "@types/node": "^20.0.0",
-    "@types/sharp": "^0.31.1",
     "tsx": "^4.21.0",
     "typescript": "^5.0.0",
     "vitest": "^4.1.1"
