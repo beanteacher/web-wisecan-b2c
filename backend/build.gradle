@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.+'
+    id 'org.springframework.boot' version '3.4.+'
     id 'io.spring.dependency-management' version '1.1.+'
 }
 
@@ -17,12 +17,25 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    springAiVersion = '1.1.2'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
+}
+
 dependencies {
     // Core
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Spring AI MCP Server (WebMVC + Streamable HTTP)
+    implementation 'org.springframework.ai:spring-ai-starter-mcp-server-webmvc'
 
     // Monitoring
     implementation 'io.micrometer:micrometer-registry-prometheus'

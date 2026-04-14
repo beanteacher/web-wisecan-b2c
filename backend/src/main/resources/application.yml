@@ -34,10 +34,18 @@ jwt:
   access-expiration: 3600000    # 1시간
   refresh-expiration: 604800000 # 7일
 
-wisecan:
+spring.ai:
   mcp:
-    command: node mcp-server/index.js
-    timeout-ms: 10000
+    server:
+      enabled: true
+      name: wisecan-b2c-mcp
+      version: 0.0.1
+      protocol: STREAMABLE          # SSE | STREAMABLE | STATELESS
+      sse-message-endpoint: /mcp    # Streamable HTTP 엔드포인트 (기본 /mcp)
+      type: SYNC                    # SYNC | ASYNC
+      instructions: "wisecan B2C 메시지 발송/조회 도구"
+
+wisecan:
   rate-limit:
     per-minute: 60
     mode: redis   # redis | memory
@@ -51,8 +59,8 @@ management:
 logging:
   level:
     root: INFO
-    com.wisecan.b2c: DEBUG
-    com.wisecan.b2c.service.AuthService: DEBUG
+    com.wisecan.unified: DEBUG
+    com.wisecan.unified.service.AuthService: DEBUG
     org.springframework.web: INFO
     org.springframework.security: WARN
     org.hibernate: WARN
@@ -83,7 +91,7 @@ spring:
 
 logging:
   level:
-    com.wisecan.b2c: DEBUG
+    com.wisecan.unified: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
     org.springframework.security: DEBUG
